@@ -43,7 +43,7 @@ func NewExamples() *Examples {
 	return &Examples{}
 }
 
-// New creates a new Package.
+// New creates a new Parser.
 func New() *Parser {
 	return &Parser{}
 }

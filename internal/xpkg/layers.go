@@ -22,11 +22,13 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/empty"
 	"github.com/google/go-containerregistry/pkg/v1/mutate"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
+	"github.com/spf13/afero"
 
 	"github.com/crossplane/crossplane-runtime/pkg/errors"
 )
@@ -155,4 +157,79 @@ func AnnotateLayers(i v1.Image) (v1.Image, error) {
 	}
 
 	return mutate.ConfigFile(img, cfgFile)
+}
+
+// LayerFromFiles creates a flattened v1.Layer of arbitrary files.
+// It performs no interpretation (parsing) of the files.
+func LayerFromFiles(filepaths []string, fs afero.Fs) (v1.Layer, error) {
+	// Since there is an arbitrary directory of mostly small files, we'll
+	// forego streaming in-memory at the expense of some disk I/O.
+	tmpFile, err := os.CreateTemp("", "extension-*.tar")
+	if err != nil {
+		return nil, err
+	}
+	// TODO: clean this up elsewhere
+	// defer os.Remove(tmpFile.Name())
+
+	tw := tar.NewWriter(tmpFile)
+
+	for _, path := range filepaths {
+		// Get file info for the tar header
+		info, err := fs.Stat(path)
+		if err != nil {
+			tw.Close()
+			tmpFile.Close()
+			return nil, err
+		}
+		// TODO: maybe leverage the skip functions from before
+		if info.IsDir() {
+			continue
+		}
+		f, err := fs.Open(path)
+		if err != nil {
+			tw.Close()
+			tmpFile.Close()
+			return nil, err
+		}
+		// Create tar header, and flatten for the layer.
+		header := &tar.Header{
+			Name:     filepath.Base(path),
+			Size:     info.Size(),
+			Mode:     int64(info.Mode()),
+			ModTime:  info.ModTime(),
+			Typeflag: tar.TypeReg,
+		}
+
+		if err := tw.WriteHeader(header); err != nil {
+			f.Close()
+			tw.Close()
+			tmpFile.Close()
+			return nil, err
+		}
+		if _, err := io.Copy(tw, f); err != nil {
+			f.Close()
+			tw.Close()
+			tmpFile.Close()
+			return nil, err
+		}
+
+		f.Close()
+	}
+	// Close the tar writer to flush all data
+	if err := tw.Close(); err != nil {
+		tmpFile.Close()
+		return nil, err
+	}
+
+	// Reset file pointer to beginning of file
+	if _, err := tmpFile.Seek(0, 0); err != nil {
+		tmpFile.Close()
+		return nil, err
+	}
+
+	// Create layer from the tarball file
+	layer, err := tarball.LayerFromFile(tmpFile.Name())
+	tmpFile.Close()
+
+	return layer, err
 }
