@@ -25,6 +25,9 @@ type MetaSpec struct {
 
 	// Dependencies on other packages.
 	DependsOn []Dependency `json:"dependsOn,omitempty"`
+
+	// Structured metadata about a package's capabiltiies.
+	MetadataExtensions *StructuredMeta `json:"metadataExtensions,omitempty"`
 }
 
 // CrossplaneConstraints specifies a packages compatibility with Crossplane versions.
@@ -69,4 +72,28 @@ type Dependency struct {
 
 	// Version is the semantic version constraints of the dependency image.
 	Version string `json:"version"`
+}
+
+// StructuredMeta is structured metadata describing the package.
+type StructuredMeta struct {
+	// Capabilities describe optional features provided by the package.
+	// +optional
+	Capabilities []Capability `json:"capabilities,omitempty"`
+}
+
+// Capability is metadata about a single feature or integration
+// supported by the package.
+type Capability struct {
+	// Name of the feature.
+	// +optional
+	Name *string `json:"name,omitempty"`
+
+	// Maturity describes the maturity level of the feature.
+	// +kubebuilder:validation:Enum=alpha;beta;stable
+	// +optional
+	Maturity *string `json:"maturity,omitempty"`
+
+	// Whether the feature is enabled by default.
+	// +optional
+	Enabled *bool `json:"enabled,omitempty"`
 }

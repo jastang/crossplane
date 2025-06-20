@@ -30,6 +30,36 @@ func (c *GeneratedFromHubConverter) pV1CrossplaneConstraintsToPV1beta1Crossplane
 	}
 	return pV1beta1CrossplaneConstraints
 }
+func (c *GeneratedFromHubConverter) pV1StructuredMetaToPV1beta1StructuredMeta(source *v1.StructuredMeta) *StructuredMeta {
+	var pV1beta1StructuredMeta *StructuredMeta
+	if source != nil {
+		var v1beta1StructuredMeta StructuredMeta
+		if (*source).Capabilities != nil {
+			v1beta1StructuredMeta.Capabilities = make([]Capability, len((*source).Capabilities))
+			for i := 0; i < len((*source).Capabilities); i++ {
+				v1beta1StructuredMeta.Capabilities[i] = c.v1CapabilityToV1beta1Capability((*source).Capabilities[i])
+			}
+		}
+		pV1beta1StructuredMeta = &v1beta1StructuredMeta
+	}
+	return pV1beta1StructuredMeta
+}
+func (c *GeneratedFromHubConverter) v1CapabilityToV1beta1Capability(source v1.Capability) Capability {
+	var v1beta1Capability Capability
+	if source.Name != nil {
+		xstring := *source.Name
+		v1beta1Capability.Name = &xstring
+	}
+	if source.Maturity != nil {
+		xstring2 := *source.Maturity
+		v1beta1Capability.Maturity = &xstring2
+	}
+	if source.Enabled != nil {
+		xbool := *source.Enabled
+		v1beta1Capability.Enabled = &xbool
+	}
+	return v1beta1Capability
+}
 func (c *GeneratedFromHubConverter) v1DependencyToV1beta1Dependency(source v1.Dependency) Dependency {
 	var v1beta1Dependency Dependency
 	if source.APIVersion != nil {
@@ -73,6 +103,7 @@ func (c *GeneratedFromHubConverter) v1MetaSpecToV1beta1MetaSpec(source v1.MetaSp
 			v1beta1MetaSpec.DependsOn[i] = c.v1DependencyToV1beta1Dependency(source.DependsOn[i])
 		}
 	}
+	v1beta1MetaSpec.MetadataExtensions = c.pV1StructuredMetaToPV1beta1StructuredMeta(source.MetadataExtensions)
 	return v1beta1MetaSpec
 }
 func (c *GeneratedFromHubConverter) v1TypeMetaToV1TypeMeta(source v11.TypeMeta) v11.TypeMeta {
@@ -104,11 +135,41 @@ func (c *GeneratedToHubConverter) pV1beta1CrossplaneConstraintsToPV1CrossplaneCo
 	}
 	return pV1CrossplaneConstraints
 }
+func (c *GeneratedToHubConverter) pV1beta1StructuredMetaToPV1StructuredMeta(source *StructuredMeta) *v1.StructuredMeta {
+	var pV1StructuredMeta *v1.StructuredMeta
+	if source != nil {
+		var v1StructuredMeta v1.StructuredMeta
+		if (*source).Capabilities != nil {
+			v1StructuredMeta.Capabilities = make([]v1.Capability, len((*source).Capabilities))
+			for i := 0; i < len((*source).Capabilities); i++ {
+				v1StructuredMeta.Capabilities[i] = c.v1beta1CapabilityToV1Capability((*source).Capabilities[i])
+			}
+		}
+		pV1StructuredMeta = &v1StructuredMeta
+	}
+	return pV1StructuredMeta
+}
 func (c *GeneratedToHubConverter) v1TypeMetaToV1TypeMeta2(source v11.TypeMeta) v11.TypeMeta {
 	var v1TypeMeta v11.TypeMeta
 	v1TypeMeta.Kind = source.Kind
 	v1TypeMeta.APIVersion = source.APIVersion
 	return v1TypeMeta
+}
+func (c *GeneratedToHubConverter) v1beta1CapabilityToV1Capability(source Capability) v1.Capability {
+	var v1Capability v1.Capability
+	if source.Name != nil {
+		xstring := *source.Name
+		v1Capability.Name = &xstring
+	}
+	if source.Maturity != nil {
+		xstring2 := *source.Maturity
+		v1Capability.Maturity = &xstring2
+	}
+	if source.Enabled != nil {
+		xbool := *source.Enabled
+		v1Capability.Enabled = &xbool
+	}
+	return v1Capability
 }
 func (c *GeneratedToHubConverter) v1beta1DependencyToV1Dependency(source Dependency) v1.Dependency {
 	var v1Dependency v1.Dependency
@@ -153,5 +214,6 @@ func (c *GeneratedToHubConverter) v1beta1MetaSpecToV1MetaSpec(source MetaSpec) v
 			v1MetaSpec.DependsOn[i] = c.v1beta1DependencyToV1Dependency(source.DependsOn[i])
 		}
 	}
+	v1MetaSpec.MetadataExtensions = c.pV1beta1StructuredMetaToPV1StructuredMeta(source.MetadataExtensions)
 	return v1MetaSpec
 }

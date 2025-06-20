@@ -94,6 +94,34 @@ spec:
                   - version
                   type: object
                 type: array
+              metadataExtensions:
+                description: Structured metadata about a package's capabiltiies.
+                properties:
+                  capabilities:
+                    description: Capabilities describe optional features provided
+                      by the package.
+                    items:
+                      description: |-
+                        Capability is metadata about a single feature or integration
+                        supported by the package.
+                      properties:
+                        enabled:
+                          description: Whether the feature is enabled by default.
+                          type: boolean
+                        maturity:
+                          description: Maturity describes the maturity level of the
+                            feature.
+                          enum:
+                          - alpha
+                          - beta
+                          - stable
+                          type: string
+                        name:
+                          description: Name of the feature.
+                          type: string
+                      type: object
+                    type: array
+                type: object
             type: object
         required:
         - spec
@@ -180,6 +208,34 @@ spec:
                   - version
                   type: object
                 type: array
+              metadataExtensions:
+                description: Structured metadata about a package's capabiltiies.
+                properties:
+                  capabilities:
+                    description: Capabilities describe optional features provided
+                      by the package.
+                    items:
+                      description: |-
+                        Capability is metadata about a single feature or integration
+                        supported by the package.
+                      properties:
+                        enabled:
+                          description: Whether the feature is enabled by default.
+                          type: boolean
+                        maturity:
+                          description: Maturity describes the maturity level of the
+                            feature.
+                          enum:
+                          - alpha
+                          - beta
+                          - stable
+                          type: string
+                        name:
+                          description: Name of the feature.
+                          type: string
+                      type: object
+                    type: array
+                type: object
             type: object
         required:
         - spec

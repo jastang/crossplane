@@ -41,6 +41,36 @@ func (c *GeneratedFromHubConverter) pV1CrossplaneConstraintsToPV1alpha1Crossplan
 	}
 	return pV1alpha1CrossplaneConstraints
 }
+func (c *GeneratedFromHubConverter) pV1StructuredMetaToPV1alpha1StructuredMeta(source *v1.StructuredMeta) *StructuredMeta {
+	var pV1alpha1StructuredMeta *StructuredMeta
+	if source != nil {
+		var v1alpha1StructuredMeta StructuredMeta
+		if (*source).Capabilities != nil {
+			v1alpha1StructuredMeta.Capabilities = make([]Capability, len((*source).Capabilities))
+			for i := 0; i < len((*source).Capabilities); i++ {
+				v1alpha1StructuredMeta.Capabilities[i] = c.v1CapabilityToV1alpha1Capability((*source).Capabilities[i])
+			}
+		}
+		pV1alpha1StructuredMeta = &v1alpha1StructuredMeta
+	}
+	return pV1alpha1StructuredMeta
+}
+func (c *GeneratedFromHubConverter) v1CapabilityToV1alpha1Capability(source v1.Capability) Capability {
+	var v1alpha1Capability Capability
+	if source.Name != nil {
+		xstring := *source.Name
+		v1alpha1Capability.Name = &xstring
+	}
+	if source.Maturity != nil {
+		xstring2 := *source.Maturity
+		v1alpha1Capability.Maturity = &xstring2
+	}
+	if source.Enabled != nil {
+		xbool := *source.Enabled
+		v1alpha1Capability.Enabled = &xbool
+	}
+	return v1alpha1Capability
+}
 func (c *GeneratedFromHubConverter) v1ConfigurationSpecToV1alpha1ConfigurationSpec(source v1.ConfigurationSpec) ConfigurationSpec {
 	var v1alpha1ConfigurationSpec ConfigurationSpec
 	v1alpha1ConfigurationSpec.MetaSpec = c.v1MetaSpecToV1alpha1MetaSpec(source.MetaSpec)
@@ -84,6 +114,7 @@ func (c *GeneratedFromHubConverter) v1MetaSpecToV1alpha1MetaSpec(source v1.MetaS
 			v1alpha1MetaSpec.DependsOn[i] = c.v1DependencyToV1alpha1Dependency(source.DependsOn[i])
 		}
 	}
+	v1alpha1MetaSpec.MetadataExtensions = c.pV1StructuredMetaToPV1alpha1StructuredMeta(source.MetadataExtensions)
 	return v1alpha1MetaSpec
 }
 func (c *GeneratedFromHubConverter) v1ProviderSpecToV1alpha1ProviderSpec(source v1.ProviderSpec) ProviderSpec {
@@ -131,11 +162,41 @@ func (c *GeneratedToHubConverter) pV1alpha1CrossplaneConstraintsToPV1CrossplaneC
 	}
 	return pV1CrossplaneConstraints
 }
+func (c *GeneratedToHubConverter) pV1alpha1StructuredMetaToPV1StructuredMeta(source *StructuredMeta) *v1.StructuredMeta {
+	var pV1StructuredMeta *v1.StructuredMeta
+	if source != nil {
+		var v1StructuredMeta v1.StructuredMeta
+		if (*source).Capabilities != nil {
+			v1StructuredMeta.Capabilities = make([]v1.Capability, len((*source).Capabilities))
+			for i := 0; i < len((*source).Capabilities); i++ {
+				v1StructuredMeta.Capabilities[i] = c.v1alpha1CapabilityToV1Capability((*source).Capabilities[i])
+			}
+		}
+		pV1StructuredMeta = &v1StructuredMeta
+	}
+	return pV1StructuredMeta
+}
 func (c *GeneratedToHubConverter) v1TypeMetaToV1TypeMeta2(source v11.TypeMeta) v11.TypeMeta {
 	var v1TypeMeta v11.TypeMeta
 	v1TypeMeta.Kind = source.Kind
 	v1TypeMeta.APIVersion = source.APIVersion
 	return v1TypeMeta
+}
+func (c *GeneratedToHubConverter) v1alpha1CapabilityToV1Capability(source Capability) v1.Capability {
+	var v1Capability v1.Capability
+	if source.Name != nil {
+		xstring := *source.Name
+		v1Capability.Name = &xstring
+	}
+	if source.Maturity != nil {
+		xstring2 := *source.Maturity
+		v1Capability.Maturity = &xstring2
+	}
+	if source.Enabled != nil {
+		xbool := *source.Enabled
+		v1Capability.Enabled = &xbool
+	}
+	return v1Capability
 }
 func (c *GeneratedToHubConverter) v1alpha1ConfigurationSpecToV1ConfigurationSpec(source ConfigurationSpec) v1.ConfigurationSpec {
 	var v1ConfigurationSpec v1.ConfigurationSpec
@@ -180,6 +241,7 @@ func (c *GeneratedToHubConverter) v1alpha1MetaSpecToV1MetaSpec(source MetaSpec) 
 			v1MetaSpec.DependsOn[i] = c.v1alpha1DependencyToV1Dependency(source.DependsOn[i])
 		}
 	}
+	v1MetaSpec.MetadataExtensions = c.pV1alpha1StructuredMetaToPV1StructuredMeta(source.MetadataExtensions)
 	return v1MetaSpec
 }
 func (c *GeneratedToHubConverter) v1alpha1ProviderSpecToV1ProviderSpec(source ProviderSpec) v1.ProviderSpec {
